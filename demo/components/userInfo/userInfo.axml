@@ -1,0 +1,6 @@
+<view class="user-info">
+  <image mode="scaleToFill" src="/assets/default.png"/>
+  <text style="margin-left: 10px;">{{ $.userInfo.sex }}</text>
+  <text style="margin-left: 10px;">{{ $.userInfo.name }}</text>
+  <text style="margin-left: 10px;">{{ time }}</text>
+</view>

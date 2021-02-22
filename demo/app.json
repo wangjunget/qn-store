@@ -1,0 +1,29 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/home/home",
+    "pages/third/third"
+  ],
+  "window": {
+    "defaultTitle": "千牛状态管理工具"
+  },
+  "tabBarEx": {
+    "items": [
+      {
+        "id": "first",
+        "pagePath": "pages/index/index",
+        "name": "页面一"
+      },
+      {
+        "id": "second",
+        "pagePath": "pages/home/home",
+        "name": "页面二"
+      },
+      {
+        "id": "third",
+        "pagePath": "pages/third/third",
+        "name": "页面三"
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+.current-info {
+  margin-top: 30px;
+  padding: 0 30px;
+}
+
+.info-item {
+  margin-bottom: 20px;
+  font-size: 14px;
+}

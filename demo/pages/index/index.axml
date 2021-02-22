@@ -1,0 +1,11 @@
+<view>
+  <header>首页</header>
+  <view class="current-info">
+    <view class="info-item">
+      姓名：{{ $.userInfo.name }}
+    </view>
+    <view class="info-item">
+      性别：{{ $.userInfo.sex }}
+    </view>
+  </view>
+</view>
