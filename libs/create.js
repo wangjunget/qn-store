@@ -77,41 +77,41 @@ create.Page = function (store, option) {
 }
 
 create.Component = function (option) {
-  const page = getCurrentPages()[getCurrentPages().length - 1]
-  // 页面未引入但是组件引入，使用默认直接创建组件
-  if (!page.store) {
-    return Component(option)
-  }
-
   const didMount = option.didMount
   const hasData = typeof option.data !== 'undefined'
   let clone
 
   option.didMount = function () {
-    option.use && (this.__updatePath = getPath(option.use))
-    this.store = page.store
-    this.__use = option.use
-    this.computed = option.computed
-    if (option.data) {
-      clone = JSON.parse(JSON.stringify(option.data))
-      option.data.$ = this.store.data
-    } else {
-      option.data = this.store.data
-    }
-    this.__hasData = hasData
-    if (hasData) {
-      Object.assign(option.data, JSON.parse(JSON.stringify(clone)))
-    }
-    this.setData(option.data)
-    const using = getUsing(this.store.data, option.use)
+    const page = getCurrentPages()[getCurrentPages().length - 1]
+    // 页面未引入但是组件引入，使用默认直接创建组件
+    if (page.store) {
+      option.use && (this.__updatePath = getPath(option.use))
+      this.store = page.store
+      this.__use = option.use
+      this.computed = option.computed
+      if (option.data) {
+        clone = JSON.parse(JSON.stringify(option.data))
+        option.data.$ = this.store.data
+      } else {
+        option.data = this.store.data
+      }
+      this.__hasData = hasData
+      if (hasData) {
+        Object.assign(option.data, JSON.parse(JSON.stringify(clone)))
+      }
+      this.setData(option.data)
+      const using = getUsing(this.store.data, option.use)
 
-    option.computed && compute(option.computed, this.store, using, this)
-    this.setData(using)
+      option.computed && compute(option.computed, this.store, using, this)
+      this.setData(using)
 
-    page._omixComponents = page._omixComponents || []
-    page._omixComponents.push(this)
+      page._omixComponents = page._omixComponents || []
+      page._omixComponents.push(this)
+    }
+
     didMount && didMount.call(this)
   }
+
   Component(option)
 }
 

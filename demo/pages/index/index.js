@@ -1,7 +1,7 @@
 import create from '../../../libs/create'
 import store from '../../store/index'
 
-create(store, {
+create.Page(store, {
   use: [
     'userInfo'
   ],
