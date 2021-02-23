@@ -62,7 +62,9 @@ function create(store, option) {
     }
 
     option.onUnload = function (e) {
-      store.instances[this.route] = store.instances[this.route].filter(ins => ins !== this)
+      store.instances[this.route] = store.instances[this.route].filter(
+        (ins) => ins !== this
+      )
       onUnload && onUnload.call(this, e)
     }
 
@@ -75,37 +77,42 @@ create.Page = function (store, option) {
 }
 
 create.Component = function (option) {
-    const didMount = option.didMount
-    const hasData = typeof option.data !== 'undefined'
-    let clone
+  const page = getCurrentPages()[getCurrentPages().length - 1]
+  // 页面未引入但是组件引入，使用默认直接创建组件
+  if (!page.store) {
+    return Component(option)
+  }
 
-    option.didMount = function () {
-      const page = getCurrentPages()[getCurrentPages().length - 1]
-      option.use && (this.__updatePath = getPath(option.use))
-      this.store = page.store
-      this.__use = option.use
-      this.computed = option.computed
-      if (option.data) {
-        clone = JSON.parse(JSON.stringify(option.data))
-        option.data.$ = this.store.data
-      } else {
-        option.data = this.store.data
-      }
-      this.__hasData = hasData
-      if (hasData) {
-        Object.assign(option.data, JSON.parse(JSON.stringify(clone)))
-      }
-      this.setData(option.data)
-      const using = getUsing(this.store.data, option.use)
+  const didMount = option.didMount
+  const hasData = typeof option.data !== 'undefined'
+  let clone
 
-      option.computed && compute(option.computed, this.store, using, this)
-      this.setData(using)
-
-      page._omixComponents = page._omixComponents || []
-      page._omixComponents.push(this)
-      didMount && didMount.call(this)
+  option.didMount = function () {
+    option.use && (this.__updatePath = getPath(option.use))
+    this.store = page.store
+    this.__use = option.use
+    this.computed = option.computed
+    if (option.data) {
+      clone = JSON.parse(JSON.stringify(option.data))
+      option.data.$ = this.store.data
+    } else {
+      option.data = this.store.data
     }
-    Component(option)
+    this.__hasData = hasData
+    if (hasData) {
+      Object.assign(option.data, JSON.parse(JSON.stringify(clone)))
+    }
+    this.setData(option.data)
+    const using = getUsing(this.store.data, option.use)
+
+    option.computed && compute(option.computed, this.store, using, this)
+    this.setData(using)
+
+    page._omixComponents = page._omixComponents || []
+    page._omixComponents.push(this)
+    didMount && didMount.call(this)
+  }
+  Component(option)
 }
 
 function compute(computed, store, using, scope) {
@@ -120,7 +127,7 @@ function observeStore(store) {
     if (prop.indexOf('Array-push') === 0) {
       let dl = value.length - old.length
       for (let i = 0; i < dl; i++) {
-        patch[fixPath(path + '-' + (old.length + i))] = value[(old.length + i)]
+        patch[fixPath(path + '-' + (old.length + i))] = value[old.length + i]
       }
     } else if (prop.indexOf('Array-') === 0) {
       patch[fixPath(path)] = value
@@ -129,8 +136,6 @@ function observeStore(store) {
     }
 
     _update(patch, store)
-
-
   })
 
   if (!store.set) {
@@ -142,34 +147,38 @@ function observeStore(store) {
   const backer = store.data
   Object.defineProperty(store, 'data', {
     enumerable: true,
-    get: function() {
+    get: function () {
       return backer
     },
-    set: function() {
-      throw new Error('You must not replace store.data directly, instead assign nest prop')
-    }
+    set: function () {
+      throw new Error(
+        'You must not replace store.data directly, instead assign nest prop'
+      )
+    },
   })
 }
 
 function _update(kv, store) {
   for (let key in store.instances) {
-    store.instances[key].forEach(ins => {
+    store.instances[key].forEach((ins) => {
       _updateOne(kv, store, ins)
-      if(ins._omixComponents){
-        ins._omixComponents.forEach(compIns => {
+      if (ins._omixComponents) {
+        ins._omixComponents.forEach((compIns) => {
           _updateOne(kv, store, compIns)
         })
       }
     })
   }
-  store.__changes_.forEach(change => {
+  store.__changes_.forEach((change) => {
     change(kv)
   })
   store.debug && storeChangeLogger(store, kv)
 }
 
-function _updateOne(kv, store, ins){
-  if (!(store.updateAll || ins.__updatePath && needUpdate(kv, ins.__updatePath))) {
+function _updateOne(kv, store, ins) {
+  if (
+    !(store.updateAll || (ins.__updatePath && needUpdate(kv, ins.__updatePath)))
+  ) {
     return
   }
   if (!ins.__hasData) {
@@ -218,10 +227,22 @@ function storeChangeLogger(store, diffResult) {
   try {
     const preState = my.getStorageSync(`CurrentState`) || {}
     const title = `Data Changed`
-    console.groupCollapsed(`%c  ${title} %c ${Object.keys(diffResult)}`, 'color:#e0c184; font-weight: bold', 'color:#f0a139; font-weight: bold')
+    console.groupCollapsed(
+      `%c  ${title} %c ${Object.keys(diffResult)}`,
+      'color:#e0c184; font-weight: bold',
+      'color:#f0a139; font-weight: bold'
+    )
     console.log(`%c    Pre Data`, 'color:#ff65af; font-weight: bold', preState)
-    console.log(`%c Change Data`, 'color:#3d91cf; font-weight: bold', diffResult)
-    console.log(`%c   Next Data`, 'color:#2c9f67; font-weight: bold', store.data)
+    console.log(
+      `%c Change Data`,
+      'color:#3d91cf; font-weight: bold',
+      diffResult
+    )
+    console.log(
+      `%c   Next Data`,
+      'color:#2c9f67; font-weight: bold',
+      store.data
+    )
     console.groupEnd()
     my.setStorageSync(`CurrentState`, store.data)
   } catch (e) {
@@ -229,9 +250,6 @@ function storeChangeLogger(store, diffResult) {
   }
 }
 
-
-
 create.obaa = obaa
-
 
 export default create
