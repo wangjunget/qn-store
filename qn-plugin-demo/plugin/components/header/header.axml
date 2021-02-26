@@ -1,0 +1,4 @@
+<view class="header">
+  <slot></slot>
+  <user-info></user-info>
+</view>

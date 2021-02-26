@@ -1,0 +1,17 @@
+<view class="edit-info">
+  <view class="label">组件二</view>
+  <view class="form-item">
+    <view class="label">姓名</view>
+    <input onChange="onInputNameChange" value="{{ $.userInfo.name }}" />
+  </view>
+  <view class="form-item">
+    <view class="label">性别</view>
+    <select 
+      onChange="onInputSexChange" 
+      defaultValue="男" 
+    >
+        <option value="男">男</option>
+        <option value="女">女</option>
+    </select>
+  </view>
+</view>

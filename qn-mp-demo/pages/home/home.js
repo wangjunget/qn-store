@@ -9,7 +9,7 @@ create.Page(store, {
     name: 'gene'
   },
   onLoad: function() {
-    
+    console.log(this, this.route)
   },
   onInputNameChange: function(e) {
     const { value } = e.detail

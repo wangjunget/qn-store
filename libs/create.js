@@ -76,44 +76,117 @@ create.Page = function (store, option) {
   create(store, option)
 }
 
-create.Component = function (option) {
-  const didMount = option.didMount
-  const hasData = typeof option.data !== 'undefined'
-  let clone
+create.Component = function (store, option) {
+  if (arguments.length === 2) {
+    if (!store.instances) {
+      store.instances = {}
+    }
 
-  option.didMount = function () {
-    const page = getCurrentPages()[getCurrentPages().length - 1]
-    // 页面未引入但是组件引入，使用默认直接创建组件
-    if (page.store) {
-      option.use && (this.__updatePath = getPath(option.use))
-      this.store = page.store
-      this.__use = option.use
-      this.computed = option.computed
-      if (option.data) {
-        clone = JSON.parse(JSON.stringify(option.data))
-        option.data.$ = this.store.data
-      } else {
-        option.data = this.store.data
+    if (!store.__changes_) {
+      store.__changes_ = []
+    }
+
+    const changes = store.__changes_
+    if (!store.onChange) {
+      store.onChange = function (fn) {
+        changes.push(fn)
       }
+    }
+
+    if (!store.offChange) {
+      store.offChange = function (fn) {
+        for (let i = 0, len = changes.length; i < len; i++) {
+          if (changes[i] === fn) {
+            changes.splice(i, 1)
+            break
+          }
+        }
+      }
+    }
+    const hasData = typeof option.data !== 'undefined'
+    let clone
+    if (option.data) {
+      clone = JSON.parse(JSON.stringify(option.data))
+      option.data.$ = store.data
+    } else {
+      option.data = store.data
+    }
+    observeStore(store)
+
+    const onInit = option.onInit
+    const didMount = option.didMount
+
+    option.onInit = function (e) {
+      this.store = store
+
+      option.use && (this.__updatePath = getPath(option.use))
+      this.__use = option.use
       this.__hasData = hasData
       if (hasData) {
         Object.assign(option.data, JSON.parse(JSON.stringify(clone)))
       }
-      this.setData(option.data)
-      const using = getUsing(this.store.data, option.use)
 
-      option.computed && compute(option.computed, this.store, using, this)
-      this.setData(using)
-
-      page._omixComponents = page._omixComponents || []
-      page._omixComponents.push(this)
+      onInit && onInit.call(this, e)
     }
 
-    didMount && didMount.call(this)
+    option.didMount = function (e) {
+      const store = this.store
+      store.instances[this.is] = store.instances[this.is] || []
+      store.instances[this.is].push(this)
+      this.computed = option.computed
+      this.setData(option.data)
+      const using = getUsing(store.data, option.use)
+
+      option.computed && compute(option.computed, store, using, this)
+      this.setData(using)
+
+      didMount && didMount.call(this, e)
+    }
+
+    Component(option)
+  } else {
+
+    const didMount = store.didMount
+    const hasData = typeof store.data !== 'undefined'
+    let clone
+
+    store.didMount = function () {
+      const page = getCurrentPages()[getCurrentPages().length - 1]
+      // 页面未引入但是组件引入，使用默认直接创建组件
+
+      if (page.store) {
+        store.use && (this.__updatePath = getPath(store.use))
+        this.store = page.store
+        this.__use = store.use
+        this.computed = store.computed
+        if (store.data) {
+          clone = JSON.parse(JSON.stringify(store.data))
+          store.data.$ = this.store.data
+        } else {
+          store.data = this.store.data
+        }
+        this.__hasData = hasData
+        if (hasData) {
+          Object.assign(store.data, JSON.parse(JSON.stringify(clone)))
+        }
+        this.setData(store.data)
+        const using = getUsing(this.store.data, store.use)
+
+        store.computed && compute(store.computed, this.store, using, this)
+        this.setData(using)
+
+        page._omixComponents = page._omixComponents || []
+        page._omixComponents.push(this)
+      }
+
+      didMount && didMount.call(this)
+    }
+
+    Component(store)
   }
 
-  Component(option)
 }
+
 
 function compute(computed, store, using, scope) {
   for (let key in computed) {
