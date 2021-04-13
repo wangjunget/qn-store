@@ -2,37 +2,50 @@
  * 容器API注入
  */
 import { OpenAPI } from 'mii-open-api'
-const plugin = requirePlugin("myPlugin")
+import create from '../../../../libs/create'
+import store from '/store/index'
+
+
+const plugin = requirePlugin('myPlugin')
 // 不可更改的 api 对象
-let openAPIs = new OpenAPI("myPlugin", {
+let openAPIs = new OpenAPI('myPlugin', {
   sendCard: async (params) => {
-    console.info("sendCard:",params)
+    console.info('sendCard:', params)
     return { success: true }
   },
   openChat: async (params) => {
-    console.info("openChat:",params)
+    console.info('openChat:', params)
     return { success: true }
-  }
+  },
 })
 // 注入
 plugin.setBridge(openAPIs.get())
 
-// 服务设置
-plugin.server.onPost({
-  path: "/test/post"
-}, async (body)=>{
-  console.log("post:",{body})
-  my.alert({content: `容器接受到数据: ${JSON.stringify({body})}`})
-})
+const set = require('lodash.set')
 
-plugin.server.onGet({
-  path: "/test/get"
-}, async (data)=>{
-  console.log("get:",{data})
-  return Date.now()
-})
+plugin.server.onPost(
+  {
+    path: '/storeChange/storeChange',
+  },
+  (body) => {
+    const keys = Object.keys(body)
+    keys.forEach((key) => {
+      set(store.data, key, body[key])
+    })
+  }
+)
 
-Page({
+plugin.server.onGet(
+  {
+    path: '/test/get',
+  },
+  async (data) => {
+    console.log('get:', { data })
+    return Date.now()
+  }
+)
+
+create.Page(store, {
   onLoad(query) {
     // 页面加载
   },
@@ -63,9 +76,7 @@ Page({
       title: 'My App',
       desc: 'My App description',
       path: 'pages/index/index',
-    };
+    }
   },
-  navigateToPlugin() {
-
-  }
-});
+  navigateToPlugin() {},
+})

@@ -298,7 +298,7 @@ function _doUpdate(data, store, ins) {
 
 function storeChangeLogger(store, diffResult) {
   try {
-    const preState = my.getStorageSync(`CurrentState`) || {}
+    const preState = my.getStorageSync({key: `CurrentState`}) || {}
     const title = `Data Changed`
     console.groupCollapsed(
       `%c  ${title} %c ${Object.keys(diffResult)}`,
@@ -317,7 +317,10 @@ function storeChangeLogger(store, diffResult) {
       store.data
     )
     console.groupEnd()
-    my.setStorageSync(`CurrentState`, store.data)
+    my.setStorageSync({
+      key: `CurrentState`,
+      data: store.data
+    })
   } catch (e) {
     console.log(e)
   }

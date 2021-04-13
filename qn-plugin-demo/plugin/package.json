@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "lodash.set": "^4.3.2",
     "mii-open-api": "^0.2.0",
     "tslib": "^2.0.0"
   }

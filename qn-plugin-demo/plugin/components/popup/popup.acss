@@ -1,0 +1,15 @@
+.popup {
+  width: 200px;
+  height: 200px;
+  background-color: red;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 200px;
+  left: 200px;
+  display: none;
+}
+
+.popup.show {
+  display: flex;
+}

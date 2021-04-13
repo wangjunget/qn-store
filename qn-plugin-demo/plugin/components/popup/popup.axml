@@ -1,0 +1,3 @@
+<view class="popup {{ isShow ? 'show' : ''}}" onTap="onClose">
+  New Component
+</view>

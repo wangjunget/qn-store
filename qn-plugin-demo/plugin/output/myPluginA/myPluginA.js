@@ -1,18 +1,29 @@
 /**
  * 与容器通信的连接
  */
+import create from '../../../../libs/create'
+import store from '/store'
+
 const Bridge = require("../../bridge")
 const {client} = Bridge
 const openAPI = Bridge.getBridge()
 
 
-Component({
+create.Component(store, {
+  use: ['popup'],
   mixins: [],
   data: {},
   props: {},
   didMount() {
+    console.log(this.data)
     // 容器透传进来的数据
     console.log("context:",this.props.context)
+    store.onChange(e => {
+      client.post({
+        path: '/storeChange/storeChange',
+        body: e
+      })
+    })
   },
   didUpdate() { },
   didUnmount() { },

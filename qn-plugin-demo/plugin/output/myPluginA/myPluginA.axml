@@ -16,4 +16,5 @@
   </view>
   <component-1></component-1>
   <component-2></component-2>
+  <popup isShow="{{$.popup.show}}"></popup>
 </view>

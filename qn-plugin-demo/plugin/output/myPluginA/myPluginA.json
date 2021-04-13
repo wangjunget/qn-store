@@ -3,6 +3,7 @@
   "usingComponents": {
     "header": "/components/header/header",
     "component-1": "/components/component-1/component-1",
-    "component-2": "/components/component-2/component-2"
+    "component-2": "/components/component-2/component-2",
+    "popup": "/components/popup/popup"
   }
 }

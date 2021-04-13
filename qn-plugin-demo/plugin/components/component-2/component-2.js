@@ -16,6 +16,7 @@ create.Component(store, {
     onInputSexChange: function(e) {
       const { value } = e.detail
       this.store.data.userInfo.sex = value
+      this.store.data.logs.push(value)
     }
   }
   
