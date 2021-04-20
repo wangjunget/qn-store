@@ -1,6 +1,6 @@
 {
   "name": "qn-store",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "千牛全局状态管理工具",
   "main": "index.js",
   "keywords": [
