@@ -115,6 +115,7 @@ create.Component = function (store, option) {
 
     const onInit = option.onInit
     const didMount = option.didMount
+    const didUnmount = option.didUnmount
 
     option.onInit = function (e) {
       this.store = store
@@ -141,6 +142,18 @@ create.Component = function (store, option) {
       this.setData(using)
 
       didMount && didMount.call(this, e)
+    }
+
+    option.didUnmount = function(e) {
+      const instances = store.instances[this.is] || []
+      let instanceIndex
+      instances.forEach((item, index) => {
+        if (item.$id === this.$id) {
+          instanceIndex = index
+        }
+      })
+      instances.splice(instanceIndex, 1)
+      didUnmount && didUnmount.call(this, e)
     }
 
     Component(option)
